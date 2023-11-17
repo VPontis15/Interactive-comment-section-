@@ -1,5 +1,8 @@
+import CommnentContent from "./CommnentContent";
+import LikeComponent from "./LikeComponent";
+
 function Comment() {
-  return <div></div>;
+  return <CommnentContent />;
 }
 
 export default Comment;

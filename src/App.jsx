@@ -1,9 +1,13 @@
+import Comment from "./features/comment/Comment";
+
 import CommentSection from "./features/layout/CommentSection";
 
 function App() {
   return (
     <div>
-      <CommentSection></CommentSection>
+      <CommentSection>
+        <Comment />
+      </CommentSection>
     </div>
   );
 }

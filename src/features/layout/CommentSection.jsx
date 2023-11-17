@@ -1,10 +1,5 @@
 function CommentSection({ children }) {
-  return (
-    <div>
-      test
-      {children}
-    </div>
-  );
+  return <ul>{children}</ul>;
 }
 
 export default CommentSection;
