@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import data from "../../Data/data.json";
 
 const LikeContainer = styled.div`
   display: grid;

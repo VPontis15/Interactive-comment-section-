@@ -2,8 +2,7 @@ import styled from "styled-components";
 import data from "../../Data/data.json";
 import RepliesContainer from "../Replies/RepliesContainer";
 import LikeComponent from "./LikeComponent";
-
-const { comments } = data;
+import { useAppContext } from "../../Context/AppContext";
 
 const UserName = styled.span`
   font-weight: bold;
@@ -28,7 +27,7 @@ const ReplyingTo = styled.span`
   font-weight: bold;
 `;
 
-const Comment = styled.div`
+const Comment = styled.li`
   display: flex;
 
   align-items: start;
@@ -52,9 +51,14 @@ const ReplyButton = styled.button`
   color: hsl(238, 40%, 52%);
   font-weight: bold;
   align-items: center;
+  cursor: pointer;
 `;
 
+// const { comments } = data;
+
 function CommnentContent() {
+  const { comments, dispatch } = useAppContext();
+
   return (
     <>
       {comments.map((comment) => {
@@ -73,7 +77,10 @@ function CommnentContent() {
                   <UserAvatar src={comment.user.image.png} />
                   <UserName>{comment.user.username}</UserName>
                   <span>{comment.createdAt}</span>
-                  <ReplyButton style={{ marginLeft: "auto" }}>
+                  <ReplyButton
+                    onClick={() => console.log(comment.id)}
+                    style={{ marginLeft: "auto" }}
+                  >
                     <img
                       style={{
                         width: "20px",
@@ -103,7 +110,10 @@ function CommnentContent() {
                           <UserAvatar src={reply.user.image.png} />
                           <UserName>{reply.user.username}</UserName>
                           <span>{reply.createdAt}</span>
-                          <ReplyButton style={{ marginLeft: "auto" }}>
+                          <ReplyButton
+                            onClick={() => console.log(reply.id || comment.id)}
+                            style={{ marginLeft: "auto" }}
+                          >
                             <img
                               style={{
                                 width: "20px",
@@ -114,7 +124,7 @@ function CommnentContent() {
                             Reply
                           </ReplyButton>
                         </UserDetailsContainer>{" "}
-                        <CommentContent>
+                        <CommentContent key={reply.id}>
                           <ReplyingTo>{`@${reply.replyingTo} `}</ReplyingTo>
                           {reply.content}
                         </CommentContent>

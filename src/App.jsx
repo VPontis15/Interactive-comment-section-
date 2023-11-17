@@ -1,5 +1,5 @@
 import Comment from "./features/comment/Comment";
-
+// import AppProvider from "./Context/AppContext";
 import CommentSection from "./features/layout/CommentSection";
 
 function App() {
