@@ -4,7 +4,7 @@ import CommentSection from "./features/layout/CommentSection";
 
 function App() {
   return (
-    <div>
+    <div style={{ maxWidth: "900px", margin: "0 auto" }}>
       <CommentSection>
         <Comment />
       </CommentSection>
