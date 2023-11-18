@@ -1,4 +1,4 @@
-import { createContext, useContext, useReducer } from "react";
+import { createContext, useContext, useReducer, useState } from "react";
 import data from "../Data/data.json";
 
 const AppContext = createContext();
@@ -82,6 +82,7 @@ function reducer(state, action) {
         }),
       };
     case "addComment":
+      if (!action.payload) return;
       return {
         ...state,
         comments: [...state.comments, action.payload],
@@ -107,6 +108,10 @@ function reducer(state, action) {
 
 function AppProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
+  const [comment, setComment] = useState("");
+  function handleAddComment(e) {
+    setComment(e.target.value);
+  }
 
   return (
     <AppContext.Provider
@@ -117,6 +122,9 @@ function AppProvider({ children }) {
         allComments: state.allComments,
         likes: state.comments.score,
         isLiked: state.isLiked,
+        comment,
+        handleAddComment,
+        setComment,
         dispatch,
       }}
     >

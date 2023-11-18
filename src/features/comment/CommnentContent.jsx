@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import data from "../../Data/data.json";
+
 import RepliesContainer from "../Replies/RepliesContainer";
 import LikeComponent from "./LikeComponent";
 import { useAppContext } from "../../Context/AppContext";
@@ -53,15 +53,19 @@ const ReplyButton = styled.button`
   align-items: center;
   cursor: pointer;
 `;
+const currentUserText = {
+  display: `inlineBlock`,
+  padding: `0 .7em`,
+  color: `#fff`,
+  backgroundColor: `hsl(238, 40%, 52%)`,
+  textTransform: "lowercase",
+};
 
 // const { comments } = data;
 
 function CommnentContent() {
-  const { comments, dispatch, likes, replies, allComments, isClicked } =
-    useAppContext();
-  const isClickedStyle = {
-    color: isClicked ? "red" : "blue",
-  };
+  const { comments, dispatch, likes, replies, currentUser } = useAppContext();
+
   return (
     <>
       {comments.map((comment) => {
@@ -80,6 +84,9 @@ function CommnentContent() {
                   }}
                 >
                   <UserAvatar src={comment.user.image.png} />
+                  {currentUser.username === comment.user.username && (
+                    <span style={currentUserText}> YOU</span>
+                  )}
                   <UserName>{comment.user.username}</UserName>
                   <span>{comment.createdAt}</span>
                   <ReplyButton
@@ -113,6 +120,9 @@ function CommnentContent() {
                       <div style={{}}>
                         <UserDetailsContainer>
                           <UserAvatar src={reply.user.image.png} />
+                          {currentUser.username === reply.user.username && (
+                            <span style={currentUserText}> YOU</span>
+                          )}
                           <UserName>{reply.user.username}</UserName>
                           <span>{reply.createdAt}</span>
                           <ReplyButton
