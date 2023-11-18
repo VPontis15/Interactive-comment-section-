@@ -19,7 +19,7 @@ const LikeButton = styled.button`
   text-align: center;
 `;
 
-function LikeComponent({ children, id }) {
+function LikeComponent({ children, id, entityType }) {
   const { dispatch } = useAppContext();
 
   return (
@@ -27,7 +27,10 @@ function LikeComponent({ children, id }) {
       <LikeButton
         value={children}
         onClick={() => {
-          dispatch({ type: "likeComment", payload: id });
+          dispatch({
+            type: "likeComment",
+            payload: { id: id, entityType: entityType },
+          });
         }}
       >
         +
@@ -44,7 +47,10 @@ function LikeComponent({ children, id }) {
       <LikeButton
         onClick={() => {
           console.log(id);
-          dispatch({ type: "dislikeComment", payload: id });
+          dispatch({
+            type: "",
+            payload: { id: id, entityType: entityType },
+          });
         }}
       >
         -

@@ -32,7 +32,7 @@ const SendButton = styled.button`
 function AddComment() {
   const { currentUser, dispatch, comment, handleAddComment, setComment } =
     useAppContext();
-  console.log(currentUser);
+
   return (
     <AddCommentDiv autoFocus={true}>
       <img src={currentUser.image.png} />

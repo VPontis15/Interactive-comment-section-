@@ -3,6 +3,7 @@ import styled from "styled-components";
 import RepliesContainer from "../Replies/RepliesContainer";
 import LikeComponent from "./LikeComponent";
 import { useAppContext } from "../../Context/AppContext";
+import DeleteBtn from "../ui/DeleteBtn";
 
 const UserName = styled.span`
   font-weight: bold;
@@ -72,7 +73,7 @@ function CommnentContent() {
         return (
           <>
             <Comment key={comment.id}>
-              <LikeComponent id={comment.id}>
+              <LikeComponent entityType={comment.type} id={comment.id}>
                 <span> {comment.score}</span>{" "}
               </LikeComponent>
               <div key={comment.id} style={{}}>
@@ -89,19 +90,24 @@ function CommnentContent() {
                   )}
                   <UserName>{comment.user.username}</UserName>
                   <span>{comment.createdAt}</span>
-                  <ReplyButton
-                    onClick={() => console.log(comment.id)}
-                    style={{ marginLeft: "auto" }}
-                  >
-                    <img
-                      style={{
-                        width: "20px",
-                        height: "20px",
-                      }}
-                      src={`../../../public/icon-reply.svg`}
-                    />{" "}
-                    Reply
-                  </ReplyButton>
+                  {currentUser.username !== comment.user.username && (
+                    <ReplyButton
+                      onClick={() => console.log(reply.id || comment.id)}
+                      style={{ marginLeft: "auto" }}
+                    >
+                      <img
+                        style={{
+                          width: "20px",
+                          height: "20px",
+                        }}
+                        src={`../../../public/icon-reply.svg`}
+                      />
+                      Reply
+                    </ReplyButton>
+                  )}
+                  {currentUser.username === comment.user.username && (
+                    <DeleteBtn id={comment.id} />
+                  )}
                 </UserDetailsContainer>{" "}
                 <CommentContent>{comment.content}</CommentContent>
               </div>{" "}
@@ -116,7 +122,9 @@ function CommnentContent() {
                       }}
                       key={reply.id}
                     >
-                      <LikeComponent id={reply.id}>{reply.score}</LikeComponent>
+                      <LikeComponent entityType={reply.type} id={reply.id}>
+                        {reply.score}
+                      </LikeComponent>
                       <div style={{}}>
                         <UserDetailsContainer>
                           <UserAvatar src={reply.user.image.png} />
@@ -125,19 +133,26 @@ function CommnentContent() {
                           )}
                           <UserName>{reply.user.username}</UserName>
                           <span>{reply.createdAt}</span>
-                          <ReplyButton
-                            onClick={() => console.log(reply.id || comment.id)}
-                            style={{ marginLeft: "auto" }}
-                          >
-                            <img
-                              style={{
-                                width: "20px",
-                                height: "20px",
-                              }}
-                              src={`../../../public/icon-reply.svg`}
-                            />{" "}
-                            Reply
-                          </ReplyButton>
+                          {currentUser.username !== reply.user.username && (
+                            <ReplyButton
+                              onClick={() =>
+                                console.log(reply.id || comment.id)
+                              }
+                              style={{ marginLeft: "auto" }}
+                            >
+                              <img
+                                style={{
+                                  width: "20px",
+                                  height: "20px",
+                                }}
+                                src={`../../../public/icon-reply.svg`}
+                              />
+                              Reply
+                            </ReplyButton>
+                          )}
+                          {currentUser.username === reply.user.username && (
+                            <DeleteBtn id={reply.id} />
+                          )}
                         </UserDetailsContainer>{" "}
                         <CommentContent key={reply.id}>
                           <ReplyingTo>{`@${reply.replyingTo} `}</ReplyingTo>
