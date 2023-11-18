@@ -56,6 +56,7 @@ function AddComment() {
                 username: currentUser.username,
                 image: currentUser.image,
               },
+              type: "comment",
               score: 0,
               content: comment,
               createdAt: "1 day ago",

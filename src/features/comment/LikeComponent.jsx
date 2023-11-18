@@ -48,7 +48,7 @@ function LikeComponent({ children, id, entityType }) {
         onClick={() => {
           console.log(id);
           dispatch({
-            type: "",
+            type: "dislikeComment",
             payload: { id: id, entityType: entityType },
           });
         }}

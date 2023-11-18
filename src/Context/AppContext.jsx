@@ -93,94 +93,94 @@ function reducer(state, action) {
       break;
 
     case "dislikeComment":
-      return {
-        ...state,
-        isClicked: !state.isClicked,
-        comments: state.comments.map((comment) => {
-          if (comment.id === action.payload) {
-            if (!comment.isDisliked)
-              return {
-                ...comment,
-                score: comment.score - 1,
-                isDisliked: true,
-              };
-            else
-              return {
-                ...comment,
-                score: comment.score + 1,
-                isDisliked: false,
-              };
-          }
-          return comment;
-        }),
-      };
+      if (action.payload.entityType === "comment")
+        return {
+          ...state,
 
-    // case "likeReply":
-
-    case "dislikeReply":
-      return {
-        ...state,
-        comments: state.comments.map((comment) => {
-          if (comment.replies && comment.replies.length > 0) {
-            const updatedReplies = comment.replies.map((reply) => {
-              if (reply.id === action.payload) {
-                if (!reply.isDisliked) {
+          comments: state.comments.map((comment) => {
+            if (comment.id === action.payload.id) {
+              if (!comment.isDisliked)
+                return {
+                  ...comment,
+                  score: comment.score - 1,
+                  isDisliked: true,
+                };
+              else
+                return {
+                  ...comment,
+                  score: comment.score + 1,
+                  isDisliked: false,
+                };
+            }
+            return comment;
+          }),
+        };
+      if (action.payload.entityType === "reply")
+        return {
+          ...state,
+          comments: state.comments.map((comment) => {
+            if (comment.replies) {
+              const updatedReplies = comment.replies.map((reply) => {
+                if (reply.id === action.payload.id) {
                   return {
                     ...reply,
                     score: reply.score - 1,
-                    isLiked: false, // Ensure mutually exclusive liking/disliking
                     isDisliked: true,
                   };
                 } else {
                   return {
                     ...reply,
-                    score: reply.score + 1,
+                    score: reply.score,
                     isDisliked: false,
                   };
                 }
-              }
-              return reply;
-            });
-
-            return {
-              ...comment,
-              replies: updatedReplies,
-            };
-          }
-          return comment;
-        }),
-      };
+              });
+              return { ...comment, replies: updatedReplies };
+            }
+            return comment;
+          }),
+        };
+      break;
+    // case "likeReply":
 
     case "addComment":
-      if (!action.payload) return;
+      if (/^[^a-zA-Z0-9\s]*$/.test(action.payload)) return;
       return {
         ...state,
         comments: [...state.comments, action.payload],
       };
-    case "deleteComment":
-      return {
-        ...state,
-        comments: state.comments.filter(
-          (comment) => comment.id !== action.payload
-        ),
-      };
 
-    case "deleteReply": {
-      return {
-        ...state,
-        comments: state.comments.map((comment) => {
-          if (comment.replies) {
-            const updatedReplies = comment.replies.filter((reply) => {
-              return reply.id !== action.payload;
-            });
-            return {
-              ...comment,
-              replies: updatedReplies,
-            };
-          }
-        }),
-      };
-    }
+    case "deleteComment":
+      if (action.payload.entityType === "comment") {
+        const updatedComments = state.comments.filter(
+          (comment) => comment.id !== action.payload.id
+        );
+        console.log(updatedComments); // Check the result of the filter operation
+
+        return {
+          ...state,
+          comments: updatedComments,
+        };
+      }
+
+      if (action.payload.entityType === "reply") {
+        return {
+          ...state,
+          comments: state.comments.map((comment) => {
+            if (comment.replies) {
+              const updatedReplies = comment.replies.filter((reply) => {
+                return reply.id !== action.payload.id;
+              });
+              return {
+                ...comment,
+                replies: updatedReplies,
+              };
+            }
+            return comment;
+          }),
+        };
+      }
+      break;
     case "reply": {
       return {
         ...state,

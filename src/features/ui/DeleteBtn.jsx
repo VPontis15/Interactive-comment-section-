@@ -1,13 +1,13 @@
 import { useAppContext } from "../../Context/AppContext";
 
-function DeleteBtn({ id }) {
-  const { dispatch } = useAppContext();
+function DeleteBtn({ id, entityType }) {
+  const { dispatch, comments } = useAppContext();
   return (
     <button
       onClick={() =>
         dispatch({
-          type: "deleteReply",
-          payload: id,
+          type: "deleteComment",
+          payload: { id: id, entityType: entityType },
         })
       }
     >
