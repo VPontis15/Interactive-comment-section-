@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import data from "../../Data/data.json";
+import { useAppContext } from "../../Context/AppContext";
 
 const LikeContainer = styled.div`
   display: grid;
@@ -18,10 +19,19 @@ const LikeButton = styled.button`
   text-align: center;
 `;
 
-function LikeComponent() {
+function LikeComponent({ children, id }) {
+  const { dispatch } = useAppContext();
+
   return (
     <LikeContainer>
-      <LikeButton>+</LikeButton>
+      <LikeButton
+        value={children}
+        onClick={() => {
+          dispatch({ type: "likeComment", payload: id });
+        }}
+      >
+        +
+      </LikeButton>
       <span
         style={{
           textAlign: "center",
@@ -29,9 +39,16 @@ function LikeComponent() {
           fontWeight: "bold",
         }}
       >
-        5
+        {children}
       </span>
-      <LikeButton>-</LikeButton>
+      <LikeButton
+        onClick={() => {
+          console.log(id);
+          dispatch({ type: "dislikeComment", payload: id });
+        }}
+      >
+        -
+      </LikeButton>
     </LikeContainer>
   );
 }

@@ -57,15 +57,20 @@ const ReplyButton = styled.button`
 // const { comments } = data;
 
 function CommnentContent() {
-  const { comments, dispatch } = useAppContext();
-
+  const { comments, dispatch, likes, replies, allComments, isClicked } =
+    useAppContext();
+  const isClickedStyle = {
+    color: isClicked ? "red" : "blue",
+  };
   return (
     <>
       {comments.map((comment) => {
         return (
           <>
             <Comment key={comment.id}>
-              <LikeComponent />
+              <LikeComponent id={comment.id}>
+                <span> {comment.score}</span>{" "}
+              </LikeComponent>
               <div key={comment.id} style={{}}>
                 <UserDetailsContainer
                   style={{
@@ -104,8 +109,8 @@ function CommnentContent() {
                       }}
                       key={reply.id}
                     >
-                      <LikeComponent />
-                      <div key={reply.id} style={{}}>
+                      <LikeComponent id={reply.id}>{reply.score}</LikeComponent>
+                      <div style={{}}>
                         <UserDetailsContainer>
                           <UserAvatar src={reply.user.image.png} />
                           <UserName>{reply.user.username}</UserName>

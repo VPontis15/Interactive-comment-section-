@@ -4,11 +4,35 @@ import data from "../Data/data.json";
 const AppContext = createContext();
 
 const initialState = {
-  comments: data.comments,
+  comments: data.comments.map((comment) => {
+    return {
+      ...comment,
+      isLiked: false,
+      isDisliked: false,
+    };
+  }),
 
-  replyingTo: {},
-  replies: [],
-  user: data.comments.score,
+  currentUser: data.currentUser,
+
+  replies: data.comments
+    .reduce((arr, comment) => {
+      if (comment.replies.length > 1) return [...comment.replies];
+      return [];
+    })
+    .map((reply) => {
+      return { ...reply, isLiked: false, isDisliked: false };
+    }),
+  allData: data.comments
+    .reduce((arr, comment) => {
+      if (comment.replies.length) return [arr, comment, ...comment.replies];
+    })
+    .map((comment) => {
+      return {
+        ...comment,
+        isLiked: false,
+        isDisliked: false,
+      };
+    }),
 };
 
 function reducer(state, action) {
@@ -16,12 +40,46 @@ function reducer(state, action) {
     case "likeComment":
       return {
         ...state,
-        likes: action.payload,
+        comments: state.comments.map((comment) => {
+          if (comment.id === action.payload) {
+            if (!comment.isLiked)
+              return {
+                ...comment,
+                score: state.isDisliked ? comment.score + 2 : comment.score + 1,
+                isLiked: true,
+              };
+            else {
+              return {
+                ...comment,
+                score: comment.score - 1,
+                isLiked: false,
+              };
+            }
+          }
+          return comment;
+        }),
       };
     case "dislikeComment":
       return {
         ...state,
-        likes: action.payload,
+        isClicked: !state.isClicked,
+        comments: state.comments.map((comment) => {
+          if (comment.id === action.payload) {
+            if (!comment.isDisliked)
+              return {
+                ...comment,
+                score: comment.score - 1,
+                isDisliked: true,
+              };
+            else
+              return {
+                ...comment,
+                score: comment.score + 1,
+                isDisliked: false,
+              };
+          }
+          return comment;
+        }),
       };
     case "addComment":
       return {
@@ -54,8 +112,11 @@ function AppProvider({ children }) {
     <AppContext.Provider
       value={{
         comments: state.comments,
-        replyingTo: state.replyingTo,
+        currentUser: state.currentUser,
         replies: state.replies,
+        allComments: state.allComments,
+        likes: state.comments.score,
+        isLiked: state.isLiked,
         dispatch,
       }}
     >
@@ -66,7 +127,7 @@ function AppProvider({ children }) {
 
 function useAppContext() {
   const context = useContext(AppContext);
-  console.log(context);
+
   return context;
 }
 
