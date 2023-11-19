@@ -4,6 +4,7 @@ import RepliesContainer from "../Replies/RepliesContainer";
 import LikeComponent from "./LikeComponent";
 import { useAppContext } from "../../Context/AppContext";
 import DeleteBtn from "../ui/DeleteBtn";
+import EditBtn from "../ui/EditBtn";
 
 const UserName = styled.span`
   font-weight: bold;
@@ -30,7 +31,7 @@ const ReplyingTo = styled.span`
 
 const Comment = styled.li`
   display: flex;
-
+  width: 100%;
   align-items: start;
   gap: 1.5rem;
   background-color: #fff;
@@ -42,6 +43,40 @@ const Comment = styled.li`
 const CommentContent = styled.p`
   max-width: 65ch;
   line-height: 1.6;
+`;
+
+const EditComment = styled.textarea`
+  outline: 2px solid #e3e3e3;
+
+  outline: none;
+  resize: none;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 100px;
+  overflow: hidden;
+  cursor: text;
+  color: black;
+  &:disabled {
+    border: none;
+    outline: none;
+    resize: none;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    min-height: 100px;
+    overflow: hidden;
+    cursor: text;
+    color: black;
+  }
 `;
 
 const ReplyButton = styled.button`
@@ -65,8 +100,8 @@ const currentUserText = {
 // const { comments } = data;
 
 function CommnentContent() {
-  const { comments, dispatch, likes, replies, currentUser } = useAppContext();
-  console.log(comments);
+  const { comments, currentUser, isEditing } = useAppContext();
+
   return (
     <>
       {comments.map((comment) => {
@@ -106,10 +141,23 @@ function CommnentContent() {
                     </ReplyButton>
                   )}
                   {currentUser.username == comment.user.username && (
-                    <DeleteBtn entityType={comment.type} id={comment.id} />
+                    <>
+                      <DeleteBtn entityType={comment.type} id={comment.id} />
+                      <EditBtn entityType={comment.type} id={comment.id} />
+                    </>
                   )}
                 </UserDetailsContainer>{" "}
-                <CommentContent>{comment.content}</CommentContent>
+                {currentUser.username === comment.user.username && (
+                  <EditComment
+                    disabled={!comment.isEditing}
+                    defaultValue={comment.content}
+                  ></EditComment>
+                )}
+                {currentUser.username !== comment.user.username && (
+                  <CommentContent key={comment.id}>
+                    {comment.content}
+                  </CommentContent>
+                )}
               </div>{" "}
             </Comment>
             {comment.replies && (
@@ -125,7 +173,7 @@ function CommnentContent() {
                       <LikeComponent entityType={reply.type} id={reply.id}>
                         {reply.score}
                       </LikeComponent>
-                      <div style={{}}>
+                      <div style={{ minWidth: "65ch" }}>
                         <UserDetailsContainer>
                           <UserAvatar src={reply.user.image.png} />
                           {currentUser.username === reply.user.username && (
@@ -151,13 +199,27 @@ function CommnentContent() {
                             </ReplyButton>
                           )}
                           {currentUser.username == reply.user.username && (
-                            <DeleteBtn entityType={reply.type} id={reply.id} />
+                            <>
+                              <EditBtn reply={reply} id={reply.id} />
+                              <DeleteBtn
+                                entityType={reply.type}
+                                id={reply.id}
+                              />
+                            </>
                           )}
                         </UserDetailsContainer>{" "}
-                        <CommentContent key={reply.id}>
-                          <ReplyingTo>{`@${reply.replyingTo} `}</ReplyingTo>
-                          {reply.content}
-                        </CommentContent>
+                        {currentUser.username === reply.user.username && (
+                          <EditComment
+                            disabled={!reply.isEditing}
+                            defaultValue={`@${reply.replyingTo} ${reply.content}`}
+                          ></EditComment>
+                        )}
+                        {currentUser.username !== reply.user.username && (
+                          <CommentContent key={reply.id}>
+                            <ReplyingTo>{`@${reply.replyingTo} `}</ReplyingTo>
+                            {reply.content}
+                          </CommentContent>
+                        )}
                       </div>
                     </Comment>
                   );
