@@ -25,6 +25,8 @@ const initialState = {
   }),
 
   currentUser: data.currentUser,
+  replyId: null,
+  isOpen: false,
 };
 
 function reducer(state, action) {
@@ -181,6 +183,13 @@ function reducer(state, action) {
         };
       }
       break;
+
+    case "storeReplyId":
+      return {
+        ...state,
+        replyId: action.payload,
+        isOpen: !state.isOpen,
+      };
     case "reply": {
       return {
         ...state,
@@ -210,6 +219,8 @@ function AppProvider({ children }) {
         likes: state.comments.score,
         isLiked: state.isLiked,
         comment,
+        replyId: state.replyId,
+        isOpen: state.isOpen,
         handleAddComment,
         setComment,
         dispatch,

@@ -4,6 +4,8 @@ import RepliesContainer from "../Replies/RepliesContainer";
 import LikeComponent from "./LikeComponent";
 import { useAppContext } from "../../Context/AppContext";
 import DeleteBtn from "../ui/DeleteBtn";
+import AddComment from "./AddComment";
+import Reply from "../Replies/Reply";
 
 const UserName = styled.span`
   font-weight: bold;
@@ -65,8 +67,8 @@ const currentUserText = {
 // const { comments } = data;
 
 function CommnentContent() {
-  const { comments, dispatch, likes, replies, currentUser } = useAppContext();
-  console.log(comments);
+  const { comments, dispatch, currentUser, replyId, isOpen } = useAppContext();
+  console.log(replyId);
   return (
     <>
       {comments.map((comment) => {
@@ -76,42 +78,51 @@ function CommnentContent() {
               <LikeComponent entityType={comment.type} id={comment.id}>
                 <span> {comment.score}</span>{" "}
               </LikeComponent>
-              <div key={comment.id} style={{}}>
-                <UserDetailsContainer
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "1rem",
-                  }}
-                >
-                  <UserAvatar src={comment.user.image.png} />
-                  {currentUser.username === comment.user.username && (
-                    <span style={currentUserText}> YOU</span>
-                  )}
-                  <UserName>{comment.user.username}</UserName>
-                  <span>{comment.createdAt}</span>
-                  {currentUser.username !== comment.user.username && (
-                    <ReplyButton
-                      onClick={() => console.log(reply.id || comment.id)}
-                      style={{ marginLeft: "auto" }}
-                    >
-                      <img
-                        style={{
-                          width: "20px",
-                          height: "20px",
-                        }}
-                        src={`../../../public/icon-reply.svg`}
-                      />
-                      Reply
-                    </ReplyButton>
-                  )}
-                  {currentUser.username == comment.user.username && (
-                    <DeleteBtn entityType={comment.type} id={comment.id} />
-                  )}
-                </UserDetailsContainer>{" "}
-                <CommentContent>{comment.content}</CommentContent>
-              </div>{" "}
+              <div style={{ display: "flex", flexDirection: "column" }}>
+                <div key={comment.id} style={{}}>
+                  <UserDetailsContainer
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "1rem",
+                    }}
+                  >
+                    <UserAvatar src={comment.user.image.png} />
+                    {currentUser.username === comment.user.username && (
+                      <span style={currentUserText}> YOU</span>
+                    )}
+                    <UserName>{comment.user.username}</UserName>
+                    <span>{comment.createdAt}</span>
+                    {currentUser.username !== comment.user.username && (
+                      <ReplyButton
+                        onClick={() =>
+                          dispatch({
+                            type: "storeReplyId",
+                            payload: comment.id,
+                          })
+                        }
+                        style={{ marginLeft: "auto" }}
+                      >
+                        <img
+                          style={{
+                            width: "20px",
+                            height: "20px",
+                          }}
+                          src={`../../../public/icon-reply.svg`}
+                        />
+                        Reply
+                      </ReplyButton>
+                    )}
+                    {currentUser.username == comment.user.username && (
+                      <DeleteBtn entityType={comment.type} id={comment.id} />
+                    )}
+                  </UserDetailsContainer>{" "}
+                  <CommentContent>{comment.content}</CommentContent>
+                </div>{" "}
+                {replyId === comment.id && !isOpen && <Reply />}
+              </div>
             </Comment>
+
             {comment.replies && (
               <RepliesContainer>
                 {comment.replies.map((reply) => {
@@ -125,7 +136,7 @@ function CommnentContent() {
                       <LikeComponent entityType={reply.type} id={reply.id}>
                         {reply.score}
                       </LikeComponent>
-                      <div style={{}}>
+                      <div style={{ display: "flex", flexDirection: "column" }}>
                         <UserDetailsContainer>
                           <UserAvatar src={reply.user.image.png} />
                           {currentUser.username === reply.user.username && (
@@ -136,7 +147,10 @@ function CommnentContent() {
                           {currentUser.username !== reply.user.username && (
                             <ReplyButton
                               onClick={() =>
-                                console.log(reply.id || comment.id)
+                                dispatch({
+                                  type: "storeReplyId",
+                                  payload: reply.id,
+                                })
                               }
                               style={{ marginLeft: "auto" }}
                             >
@@ -158,6 +172,7 @@ function CommnentContent() {
                           <ReplyingTo>{`@${reply.replyingTo} `}</ReplyingTo>
                           {reply.content}
                         </CommentContent>
+                        {replyId === reply.id && !isOpen && <Reply />}
                       </div>
                     </Comment>
                   );

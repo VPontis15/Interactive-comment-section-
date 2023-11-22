@@ -46,7 +46,6 @@ function LikeComponent({ children, id, entityType }) {
       </span>
       <LikeButton
         onClick={() => {
-          console.log(id);
           dispatch({
             type: "dislikeComment",
             payload: { id: id, entityType: entityType },
