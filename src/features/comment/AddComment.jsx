@@ -39,7 +39,6 @@ function AddComment() {
       <img src={currentUser.image.png} />
 
       <TextArea
-        ref={edit}
         required={true}
         onChange={(e) => {
           handleAddComment(e);
@@ -61,6 +60,7 @@ function AddComment() {
               score: 0,
               content: comment,
               createdAt: "1 day ago",
+              replies: [],
             },
           });
           setComment("");

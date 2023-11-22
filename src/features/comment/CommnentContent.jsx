@@ -102,7 +102,7 @@ const currentUserText = {
 
 function CommnentContent() {
   const { comments, dispatch, currentUser, replyId, isOpen } = useAppContext();
-  console.log(replyId);
+
   return (
     <>
       {comments.map((comment) => {
@@ -153,7 +153,9 @@ function CommnentContent() {
                   </UserDetailsContainer>{" "}
                   <CommentContent>{comment.content}</CommentContent>
                 </div>{" "}
-                {replyId === comment.id && !isOpen && <Reply />}
+                {isOpen && replyId === comment.id && (
+                  <Reply replyTo={comment.user.username} />
+                )}
               </div>
             </Comment>
 
@@ -200,7 +202,7 @@ function CommnentContent() {
                           )}
                           {currentUser.username == reply.user.username && (
                             <>
-                              <EditBtn reply={reply} id={reply.id} />
+                              {/* <EditBtn reply={reply} id={reply.id} /> */}
                               <DeleteBtn
                                 entityType={reply.type}
                                 id={reply.id}
@@ -212,7 +214,7 @@ function CommnentContent() {
                           <ReplyingTo>{`@${reply.replyingTo} `}</ReplyingTo>
                           {reply.content}
                         </CommentContent>
-                        {replyId === reply.id && !isOpen && <Reply />}
+                        {isOpen && replyId === reply.id && <Reply />}
                       </div>
                     </Comment>
                   );

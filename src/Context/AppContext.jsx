@@ -229,11 +229,22 @@ function reducer(state, action) {
         replyId: action.payload,
         isOpen: !state.isOpen,
       };
-    case "reply": {
+
+    case "addReply": {
       return {
         ...state,
-        replyingTo: action.payload,
-        replies: state.replyingTo?.comments.replies,
+        isOpen: !state.isOpen,
+        comments: state.comments.map((comment) => {
+          if (state.replyId === comment.id) {
+            console.log(state.replyId);
+            return {
+              ...comment,
+              replies: [...comment.replies, action.payload],
+            };
+          }
+
+          return comment;
+        }),
       };
     }
     default:
@@ -261,6 +272,7 @@ function AppProvider({ children }) {
         comment,
         replyId: state.replyId,
         isOpen: state.isOpen,
+        edit,
         handleAddComment,
         setComment,
         dispatch,
