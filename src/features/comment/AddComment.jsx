@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { useAppContext } from "../../Context/AppContext";
+import { useEffect, useRef } from "react";
 const AddCommentDiv = styled.div`
   display: flex;
   align-items: start;
@@ -30,7 +31,7 @@ const SendButton = styled.button`
 `;
 
 function AddComment() {
-  const { currentUser, dispatch, comment, handleAddComment, setComment } =
+  const { currentUser, dispatch, comment, handleAddComment, setComment, edit } =
     useAppContext();
 
   return (
@@ -38,16 +39,16 @@ function AddComment() {
       <img src={currentUser.image.png} />
 
       <TextArea
+        ref={edit}
         required={true}
         onChange={(e) => {
           handleAddComment(e);
         }}
-        value={comment}
         placeholder="   Add comment..."
       ></TextArea>
       <SendButton
         onClick={() => {
-          if (!comment) return;
+          if (comment === "" || /^\s*$/.test(comment)) return;
           dispatch({
             type: "addComment",
             payload: {

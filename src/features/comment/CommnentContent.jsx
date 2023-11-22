@@ -32,7 +32,7 @@ const ReplyingTo = styled.span`
 
 const Comment = styled.li`
   display: flex;
-
+  width: 100%;
   align-items: start;
   gap: 1.5rem;
   background-color: #fff;
@@ -44,6 +44,40 @@ const Comment = styled.li`
 const CommentContent = styled.p`
   max-width: 65ch;
   line-height: 1.6;
+`;
+
+const EditComment = styled.textarea`
+  outline: 2px solid #e3e3e3;
+
+  outline: none;
+  resize: none;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 100px;
+  overflow: hidden;
+  cursor: text;
+  color: black;
+  &:disabled {
+    border: none;
+    outline: none;
+    resize: none;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    min-height: 100px;
+    overflow: hidden;
+    cursor: text;
+    color: black;
+  }
 `;
 
 const ReplyButton = styled.button`
@@ -165,7 +199,13 @@ function CommnentContent() {
                             </ReplyButton>
                           )}
                           {currentUser.username == reply.user.username && (
-                            <DeleteBtn entityType={reply.type} id={reply.id} />
+                            <>
+                              <EditBtn reply={reply} id={reply.id} />
+                              <DeleteBtn
+                                entityType={reply.type}
+                                id={reply.id}
+                              />
+                            </>
                           )}
                         </UserDetailsContainer>{" "}
                         <CommentContent key={reply.id}>

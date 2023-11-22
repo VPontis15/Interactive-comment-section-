@@ -1,4 +1,4 @@
-import { createContext, useContext, useReducer, useState } from "react";
+import { createContext, useContext, useReducer, useRef, useState } from "react";
 import data from "../Data/data.json";
 
 const AppContext = createContext();
@@ -12,6 +12,7 @@ const initialState = {
           type: "reply",
           isLiked: false,
           isDisliked: false,
+          isEditing: false,
         };
       });
       return {
@@ -20,6 +21,7 @@ const initialState = {
         isDisliked: false,
         type: "comment",
         replies: updatedReplies,
+        isEditing: false,
       };
     }
   }),
@@ -40,16 +42,14 @@ function reducer(state, action) {
               if (!comment.isLiked)
                 return {
                   ...comment,
-                  score: state.isDisliked
-                    ? comment.score + 2
-                    : comment.score + 1,
+
+                  score: comment.score + 1,
                   isLiked: true,
+                  isDisliked: false,
                 };
               else {
                 return {
                   ...comment,
-                  score: comment.score - 1,
-                  isLiked: false,
                 };
               }
             }
@@ -67,17 +67,13 @@ function reducer(state, action) {
                   if (!reply.isLiked) {
                     return {
                       ...reply,
-                      score: reply.isDisliked
-                        ? reply.score + 2
-                        : reply.score + 1,
+                      score: reply.score + 1,
                       isLiked: true,
                       isDisliked: false,
                     };
                   } else {
                     return {
                       ...reply,
-                      score: reply.score - 1,
-                      isLiked: false,
                     };
                   }
                 }
@@ -106,12 +102,11 @@ function reducer(state, action) {
                   ...comment,
                   score: comment.score - 1,
                   isDisliked: true,
+                  isLiked: false,
                 };
               else
                 return {
                   ...comment,
-                  score: comment.score + 1,
-                  isDisliked: false,
                 };
             }
             return comment;
@@ -123,17 +118,16 @@ function reducer(state, action) {
           comments: state.comments.map((comment) => {
             if (comment.replies) {
               const updatedReplies = comment.replies.map((reply) => {
-                if (reply.id === action.payload.id) {
+                if (reply.id === action.payload.id && !reply.isDisliked) {
                   return {
                     ...reply,
                     score: reply.score - 1,
                     isDisliked: true,
+                    isLiked: false,
                   };
                 } else {
                   return {
                     ...reply,
-                    score: reply.score,
-                    isDisliked: false,
                   };
                 }
               });
@@ -146,10 +140,56 @@ function reducer(state, action) {
     // case "likeReply":
 
     case "addComment":
-      if (/^[^a-zA-Z0-9\s]*$/.test(action.payload)) return;
       return {
         ...state,
         comments: [...state.comments, action.payload],
+      };
+
+    case "editComment":
+      return {
+        ...state,
+        comments: state.comments.map((comment) => {
+          if (comment.replies) {
+            const updatedReplies = comment.replies.map((reply) => {
+              if (reply.id === action.payload.id) {
+                return {
+                  ...reply,
+                  content: "hi",
+                };
+              } else return { ...reply };
+            });
+            return { ...comment, replies: updatedReplies };
+          }
+          return { ...comment };
+        }),
+      };
+
+    case "editCommentBtn":
+      return {
+        ...state,
+        comments: state.comments.map((comment) => {
+          if (comment.replies) {
+            return {
+              ...comment,
+              replies: comment.replies.map((reply) => {
+                if (reply.id === action.payload) {
+                  return {
+                    ...reply,
+                    isEditing: !reply.isEditing,
+                  };
+                }
+                return reply;
+              }),
+            };
+          }
+          if (comment.id === action.payload) {
+            return {
+              ...comment,
+              isEditing: !comment.isEditing,
+            };
+          }
+          return comment;
+        }),
       };
 
     case "deleteComment":
@@ -157,7 +197,6 @@ function reducer(state, action) {
         const updatedComments = state.comments.filter(
           (comment) => comment.id !== action.payload.id
         );
-        console.log(updatedComments); // Check the result of the filter operation
 
         return {
           ...state,
@@ -205,6 +244,7 @@ function reducer(state, action) {
 function AppProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [comment, setComment] = useState("");
+  const edit = useRef(null);
   function handleAddComment(e) {
     setComment(e.target.value);
   }
